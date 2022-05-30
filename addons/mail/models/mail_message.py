@@ -957,9 +957,6 @@ class Message(models.Model):
         if 'record_name' not in values and 'default_record_name' not in self.env.context:
             values['record_name'] = self._get_record_name(values)
 
-        if 'attachment_ids' not in values:
-            values.setdefault('attachment_ids', [])
-
         # extract base64 images
         if 'body' in values:
             Attachments = self.env['ir.attachment'].with_context(clean_context(self._context))
@@ -981,7 +978,7 @@ class Message(models.Model):
                         return match.group(3)  # group(3) is the url ending single/double quote matched by the regexp
                     else:
                         attachment.generate_access_token()
-                        values['attachment_ids'].append((4, attachment.id))
+                        values.setdefaut('attachment_ids', []).append((4, attachment.id))
                         data_to_url[key] = ['/web/image/%s?access_token=%s' % (attachment.id, attachment.access_token), name]
                 return '%s%s alt="%s"' % (data_to_url[key][0], match.group(3), data_to_url[key][1])
             values['body'] = _image_dataurl.sub(base64_to_boundary, tools.ustr(values['body']))
